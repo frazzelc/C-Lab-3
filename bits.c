@@ -222,7 +222,7 @@ int invert(int x, int p, int n) {
 	// Creates mask area with n then shifts with p, then uses XOR to invert
 	int mask = ~(~0 << n);
 	mask = mask << p;
-   int fin;
+   int fin = 0x0;
 	fin = x ^ mask;
 	return fin;
 
