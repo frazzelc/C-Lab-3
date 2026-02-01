@@ -144,7 +144,10 @@ NOTES:
  *   Max ops: 8
  *   Rating: 1
  */
-int bitAnd(int x, int y) { return 0; }
+int bitAnd(int x, int y) {
+	// Uses DeMorgan's Law to detect wether it's not x or not y, and returns the opposite
+	return ~((~x)|(~y));
+}
 /*
  * bitXor - x^y using only ~ and &
  *   Example: bitXor(4, 5) = 1
@@ -152,14 +155,28 @@ int bitAnd(int x, int y) { return 0; }
  *   Max ops: 14
  *   Rating: 1
  */
-int bitXor(int x, int y) { return 0; }
+int bitXor(int x, int y) {
+	// Checks that both are not 1 at the same time
+	int notboth = ~(x & y);
+	// Checks either x or y are 1
+	int either = ~((~x) & (~y));
+	return notboth & either;
+}
 /*
  * thirdBits - return word with every third bit (starting from the LSB) set to 1
  *   Legal ops: ! ~ & ^ | + << >>
  *   Max ops: 8
  *   Rating: 1
  */
-int thirdBits(void) { return 0; }
+int thirdBits(void) {
+	// Sets LSB to 1 and uses it to copy repeatedly up to the 30th bit
+	int x = 1;
+	x = x | (x << 3);
+	x = x | (x << 3);
+	x = x | (x << 9);
+ 	x = x | (x << 18);
+	return x;
+}
 /*
  * getByte - Extract byte n from word x
  *   Bytes numbered from 0 (least significant) to 3 (most significant)
@@ -168,7 +185,13 @@ int thirdBits(void) { return 0; }
  *   Max ops: 6
  *   Rating: 2
  */
-int getByte(int x, int n) { return 0; }
+int getByte(int x, int n) {
+	// Move the bytes needed to least significant bit and extract later
+	int move = n << 3;
+	int shifted = x >> move;
+	return shifted & 0xFF;
+
+}
 /*
  * logicalShift - shift x to the right by n, using a logical shift
  *   Can assume that 0 <= n <= 31
@@ -178,8 +201,10 @@ int getByte(int x, int n) { return 0; }
  *   Rating: 3
  */
 int logicalShift(int x, int n) {
-  int filter;
-  return 0;
+	// Shifts and uses mask (which ensures the new bits are all 0's)
+	int shift = x >> n;
+	int mask = ~(((1 << 31) >> n) << 1);
+	return shift & mask;
 }
 /*
  * invert - Return x with the n bits that begin at position p inverted
@@ -193,7 +218,14 @@ int logicalShift(int x, int n) {
  *   Max ops: 20
  *   Rating: 3
  */
-int invert(int x, int p, int n) { return 0; }
+int invert(int x, int p, int n) {
+	// Creates mask area with n then shifts with p, then uses XOR to invert
+	int mask = ~(~0 << n);
+	mask = mask << p;
+	int fin = x ^ mask;
+	return fin;
+
+}
 /*
  * bang - Compute !x without using !
  *   Examples: bang(3) = 0, bang(0) = 1
@@ -212,7 +244,12 @@ int bang(int x) { return 1; }
  *  Rating: 2
  */
 
-int sign(int x) { return 0; }
+int sign(int x) {
+	// Checks wether the int is negative with shifts, as well as wether there is any kind of number inside it with ispos
+	int isneg = x >> 31;
+	int ispos = !(x >> 31) & !!x;
+	return ispos + isneg;
+}
 /*
  * fitsBits - return 1 if x can be represented as an
  *  n-bit, two's complement integer.
