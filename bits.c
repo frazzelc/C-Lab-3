@@ -261,8 +261,10 @@ int sign(int x) {
  */
 
 int fitsBits(int x, int n) {
-  /* docs */
-  return 0;
+   // Shifts the bits around by n, and confirms the expanded version is equal to x
+   int shift = 32 + ~n + 1;
+   int expanded = (x << shift) >> shift;
+   return !(x ^ expanded);
 }
 /*
  * addOK - Determine if can compute x+y without overflow
@@ -273,7 +275,15 @@ int fitsBits(int x, int n) {
  *   Rating: 3
  */
 
-int addOK(int x, int y) { return 0; }
+int addOK(int x, int y) {
+   //checks if x and y have the same sign, but sum is different!
+   int sum = x + y;
+   int same = !((x ^ y) >> 31);  // 1 if same sign, 0 if different
+   int diff = (x ^ sum) >> 31;   // if x and sum have different sign
+
+   // If same AND diff then overflow
+   return !(same & diff);
+}
 /*
  * isPower2 - returns 1 if x is a power of 2, and 0 otherwise
  *   Examples: isPower2(5) = 0, isPower2(8) = 1, isPower2(0) = 0
